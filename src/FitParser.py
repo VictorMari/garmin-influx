@@ -1,5 +1,6 @@
 import fitparse
 import json
+from pathlib import Path
 from garmin_fit_sdk import Decoder, Stream, Profile
 
 class GenericFit:
@@ -27,9 +28,11 @@ class GarminFit:
         stream = Stream.from_file(str(self.path))
         decoder = Decoder(stream)
 
+        collector = []
+
         def mesg_listenerf(mesg_num, message):
             if mesg_num == Profile['mesg_num']['RECORD']:
-                print(json.dumps(message, indent=4))
+                collector.append(message)
 
         messages, errors = decoder.read(
             apply_scale_and_offset=True,
@@ -43,10 +46,15 @@ class GarminFit:
         if len(errors) > 0:
             print("Found errors", errors)
 
+        return collector
 def main():
     f = GenericFit("data/fitfiles/Activity/2023-04-07-13-57-08.fit")
-    gf = GarminFit("data/fitfiles/Activity/2023-04-07-13-57-08.fit")
-    gf.parse()
+    gf = GarminFit("data/fitfiles/Activity/2023-04-08-14-53-57.fit")
+    messages = gf.parse()
+
+    Path("data/parsed").mkdir(parents=True, exist_ok=True)
+    with Path("data/parsed/Activity_2023-04-08-14-53-57.json").open("w+") as f:
+        json.dump(messages, f, indent=4)
     return 0
 
 
