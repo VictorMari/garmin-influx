@@ -2,6 +2,7 @@ import fitparse
 import json
 from pathlib import Path
 from garmin_fit_sdk import Decoder, Stream, Profile
+import pandas as pd
 
 class GenericFit:
     def __init__(self, path):
@@ -47,16 +48,21 @@ class GarminFit:
             print("Found errors", errors)
 
         return collector
+
+
+class PandasFit:
+    def __init__(self, path):
+        self.path = path
+
+    def parse(self):
+        print("Parsing .fit file", self.path)
+        df = pd.read_csv(self.path)
+        return df
+
 def main():
-    f = GenericFit("data/fitfiles/Activity/2023-04-07-13-57-08.fit")
-    gf = GarminFit("data/fitfiles/Activity/2023-04-08-14-53-57.fit")
-    messages = gf.parse()
-
-    Path("data/parsed").mkdir(parents=True, exist_ok=True)
-    with Path("data/parsed/Activity_2023-04-08-14-53-57.json").open("w+") as f:
-        json.dump(messages, f, indent=4)
-    return 0
-
+    fit_path = Path("data/parsed/2023-04-08-14-53-57.csv")
+    fit_pd_data = PandasFit(fit_path).parse()
+    fit_pd_data.to_json("data/parsed/travesia-04-08_indexed.json", orient="index", indent=4)
 
 if __name__ == "__main__":
     import sys

@@ -1,2 +1,3 @@
 fitparse
 garmin-fit-sdk
+pandas
