@@ -1,39 +1,61 @@
-from pathlib import Path
-import shutil
 import json
-import fitparse
+from pathlib import Path
+
+from .FitToJson import converter
+from .Influx import parser
+from PyInquirer import prompt
 
 
-
-def glob_fit_files(path):
-    fit_groups = {}
-
-    for fit_file in Path(path).glob("**/*.fit"):
-        if fit_file.parent.name in fit_groups:
-            fit_groups[str(fit_file.parent.name)].append(str(fit_file))
-        else:
-            fit_groups[str(fit_file.parent.name)] = [str(fit_file)]
-
-    return fit_groups
+def list_activity_files(path: Path):
+    for file in path.glob("Activity/*.fit"):
+        yield file
 
 
-def copy_fit_files(fit_groups):
-    dest_dir = Path("data/fitfiles")
-    dest_dir.mkdir(parents=True, exist_ok=True)
-    for type, files in fit_groups.items():
-        dest = (dest_dir / type)
-        dest.mkdir(parents=True, exist_ok=True)
-        for file in files:
-            shutil.copy(file, dest / Path(file).name)
+class Interface:
+    def __init__(self):
+        self.data_path = Path("data/fitfiles")
+
+    def prompt_activity_selection(self):
+        activity_list = list_activity_files(self.data_path)
+        questions = [
+            {
+                "type": "list",
+                "name": "activity",
+                "message": "Select an activity",
+                "choices": [{
+                    "name": activity.name,
+                    "value": activity
+                } for activity in activity_list],
+                "pageSize": 3
+            },
+            {
+                "type": "checkbox",
+                "name": "operation",
+                "message": "Select an operation",
+                "choices": [
+                    {
+                        "name": "Convert to JSON",
+                        "checked": True,
+                        "value": "convert_JSON"
+                    },
+                    {
+                        "name": "convert to JSON and upload to InfluxDB",
+                        "value": "convert_JSON_upload_Influx"
+                    }
+                ]
+            }
+        ]
+        answer = prompt(questions)
+        print(answer)
 
 
 def main():
-    fit_files = glob_fit_files("/run/user/1000/gvfs/mtp:host=091e_4f42_0000cbe58050/Internal Storage/GARMIN")
-    copy_fit_files(fit_files)
+    interface = Interface()
+    interface.prompt_activity_selection()
     return 0
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     import sys
 
     sys.exit(main())
