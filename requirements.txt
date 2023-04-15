@@ -1,3 +1,4 @@
 fitparse
 garmin-fit-sdk
 pandas
+influxdb-client

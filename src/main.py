@@ -28,7 +28,7 @@ def copy_fit_files(fit_groups):
 
 
 def main():
-    fit_files = glob_fit_files("/run/media/labosis/GARMIN")
+    fit_files = glob_fit_files("/run/user/1000/gvfs/mtp:host=091e_4f42_0000cbe58050/Internal Storage/GARMIN")
     copy_fit_files(fit_files)
     return 0
 
