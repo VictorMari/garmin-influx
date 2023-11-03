@@ -27,13 +27,7 @@ def convert_fit_file(input_file, output_file):
         output["stdout"] = result.stdout.decode("utf-8")
         output["stderr"] = result.stderr.decode("utf-8")
 
-
-    except FileNotFoundError:
-        print("FitCSVTool.jar not found. Please download")
-        output["stdout"] =  "FitCSVTool.jar not found. Please download",
-
     except subprocess.CalledProcessError as e:
-        print(e.stderr.decode("utf-8"))
         output["code"] =  e.returncode
         output["stdout"] = e.stdout.decode("utf-8")
         output["stderr"] = e.stderr.decode("utf-8")
@@ -46,9 +40,9 @@ def main(args):
     output_file = Path(__file__).parents[1] / "data" / "illetes.csv"
     result = convert_fit_file(input_file, output_file)
 
-    print(result["code"])
-    print(result["stderr"])
-    print(result["stdout"])
+    print("code: ", result["code"])
+    print("stderr: ", result["stderr"])
+    print("stdout: ", result["stdout"])
 
 
     return 0
