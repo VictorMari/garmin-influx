@@ -4,3 +4,5 @@ venv
 src/__pycache__
 .tox
 .pytest_cache
+env
+.vs
