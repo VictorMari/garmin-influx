@@ -3,7 +3,10 @@ import shutil
 from pathlib import Path
 import json
 
-CONVERTER = Path(__file__).parents[0] / "tools" / "FitCSVTool.jar"
+
+CONVERTER = Path(__file__).parents[1] / "bin"/ "FitCSVTool.jar"
+ACTIVITIES = Path(__file__).parents[1] / "bin" / "Activities"
+OUTPUT = Path(__file__).parents[1] / "reports"
 
 def convert_fit_file(input_file, output_file):
     print("Converting {} to {}".format(input_file, output_file))
@@ -36,9 +39,9 @@ def convert_fit_file(input_file, output_file):
 
 
 def main(args):
-    input_file = Path(__file__).parents[1] / "data" / "illetes.fit"
-    output_file = Path(__file__).parents[1] / "data" / "illetes.csv"
-    result = convert_fit_file(input_file, output_file)
+    for activity in ACTIVITIES.glob("*.fit"):
+        activity_output = OUTPUT / activity.with_suffix(".csv").name
+        result = convert_fit_file(activity, activity_output)
 
     print("code: ", result["code"])
     print("stderr: ", result["stderr"])
